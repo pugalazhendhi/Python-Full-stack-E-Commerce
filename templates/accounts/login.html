@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Sign In — ShopSphere{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card border rounded-4 shadow-sm p-4 p-md-5 bg-white">
+                <div class="text-center mb-4">
+                    <div class="brand-icon mx-auto mb-3">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+                    <h3 class="fw-bold text-dark">Welcome Back</h3>
+                    <p class="text-muted small">Sign in to your ShopSphere account</p>
+                </div>
+
+                <!-- Test Credentials Quick-Fill Hint -->
+                <div class="alert alert-info rounded-3 p-3 mb-4 small">
+                    <div class="fw-bold mb-1"><i class="bi bi-info-circle-fill me-1"></i> Demo Test Accounts:</div>
+                    <div class="d-flex justify-content-between">
+                        <span>Customer: <code>customer</code></span>
+                        <span>Pass: <code>Customer@123</code></span>
+                    </div>
+                    <div class="d-flex justify-content-between mt-1">
+                        <span>Staff Admin: <code>admin</code></span>
+                        <span>Pass: <code>Admin@123</code></span>
+                    </div>
+                </div>
+
+                <form method="POST">
+                    {% csrf_token %}
+                    
+                    {% if form.errors %}
+                        <div class="alert alert-danger rounded-3 py-2 px-3 small mb-3">
+                            Invalid username or password. Please try again.
+                        </div>
+                    {% endif %}
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">Username or Email</label>
+                        {{ form.username }}
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <label class="form-label small fw-bold text-muted mb-0">Password</label>
+                        </div>
+                        {{ form.password }}
+                    </div>
+
+                    <div class="mb-4">
+                        <button type="submit" class="btn btn-primary btn-lg rounded-pill w-100 fw-bold shadow py-2">
+                            Sign In to Account
+                        </button>
+                    </div>
+
+                    <div class="text-center small text-muted">
+                        Don't have an account yet? 
+                        <a href="{% url 'accounts:register' %}" class="fw-bold text-primary">Create an account</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <rect width="400" height="400" fill="#f1f5f9" />
+  <g transform="translate(200, 200)" text-anchor="middle">
+    <circle r="48" fill="#e2e8f0" />
+    <path d="M-20,-12 L20,-12 L15,18 L-15,18 Z" fill="none" stroke="#94a3b8" stroke-width="2.5" />
+    <text y="70" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="14" font-weight="600" fill="#94a3b8">ShopSphere</text>
+  </g>
+</svg>

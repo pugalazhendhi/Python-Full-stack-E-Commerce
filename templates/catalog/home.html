@@ -1,0 +1,262 @@
+{% extends 'base.html' %}
+{% load static humanize %}
+
+{% block title %}ShopSphere — Discover Premium Online Shopping{% endblock %}
+
+{% block content %}
+<div class="container">
+
+    <!-- 1. Attractive Hero Section -->
+    <div class="hero-banner">
+        <div class="row align-items-center">
+            <div class="col-lg-7">
+                <span class="hero-tag">
+                    <i class="bi bi-stars"></i> SEASON MEGA SALE · UP TO 40% OFF
+                </span>
+                <h1 class="hero-title">
+                    Discover Next-Gen Tech & Premium Lifestyle.
+                </h1>
+                <p class="hero-description">
+                    Explore curated collections of cutting-edge electronics, Italian leather footwear, luxury kitchenware, and engineering classics designed for modern living.
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="{% url 'catalog:product_list' %}" class="btn btn-primary btn-lg rounded-pill px-4 fw-semibold shadow">
+                        Shop All Products <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
+                    <a href="{% url 'catalog:product_list' %}?sort=popular" class="btn btn-outline-light btn-lg rounded-pill px-4 fw-semibold">
+                        View Best Sellers
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-5 d-none d-lg-block text-center position-relative">
+                <div class="p-4 rounded-4" style="background: rgba(255,255,255,0.06); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.12);">
+                    <div class="text-white-50 text-uppercase small fw-bold mb-2">Featured Spotlight</div>
+                    <h4 class="text-white fw-bold mb-2">Aura Sound Pro Wireless</h4>
+                    <p class="text-secondary small mb-3">Hybrid Active Noise Cancellation with 40-hr playback</p>
+                    <div class="fs-3 fw-bold text-primary mb-3">$249.99 <span class="fs-6 text-decoration-line-through text-white-50">$329.99</span></div>
+                    <a href="{% url 'catalog:product_list' %}?q=Aura" class="btn btn-sm btn-light rounded-pill px-3 fw-bold">
+                        Explore Deal <i class="bi bi-chevron-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Trust Indicators Bar -->
+    <div class="row g-3 mb-5">
+        <div class="col-md-3 col-6">
+            <div class="feature-box">
+                <div class="feature-icon-wrapper">
+                    <i class="bi bi-truck"></i>
+                </div>
+                <div>
+                    <h6 class="fw-bold mb-1">Free Shipping</h6>
+                    <small class="text-muted">On all orders over $500</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="feature-box">
+                <div class="feature-icon-wrapper">
+                    <i class="bi bi-shield-lock"></i>
+                </div>
+                <div>
+                    <h6 class="fw-bold mb-1">Secure Checkout</h6>
+                    <small class="text-muted">COD & Card Ready</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="feature-box">
+                <div class="feature-icon-wrapper">
+                    <i class="bi bi-arrow-repeat"></i>
+                </div>
+                <div>
+                    <h6 class="fw-bold mb-1">30-Day Returns</h6>
+                    <small class="text-muted">Hassle-free money back</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="feature-box">
+                <div class="feature-icon-wrapper">
+                    <i class="bi bi-headset"></i>
+                </div>
+                <div>
+                    <h6 class="fw-bold mb-1">24/7 Support</h6>
+                    <small class="text-muted">Dedicated expert assistance</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Product Categories -->
+    <section class="mb-5">
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <div>
+                <span class="text-primary fw-bold text-uppercase small tracking-wide">Collections</span>
+                <h3 class="fw-bold text-dark mb-0">Browse by Category</h3>
+            </div>
+            <a href="{% url 'catalog:product_list' %}" class="fw-semibold text-primary d-flex align-items-center gap-1">
+                All Categories <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+
+        <div class="row g-3">
+            {% for cat in featured_categories %}
+                <div class="col-lg-2 col-md-4 col-6">
+                    <a href="{% url 'catalog:product_list_by_category' cat.slug %}" class="card text-center border p-3 h-100 text-decoration-none shadow-sm hover-lift" style="border-radius: var(--radius-md); background: white;">
+                        <div class="mx-auto mb-3 rounded-circle d-flex align-items-center justify-content-center bg-primary-subtle text-primary" style="width: 54px; height: 54px; font-size: 1.5rem;">
+                            <i class="bi {{ cat.icon_class }}"></i>
+                        </div>
+                        <h6 class="fw-bold text-dark mb-1">{{ cat.name }}</h6>
+                        <small class="text-muted">{{ cat.product_count }} items</small>
+                    </a>
+                </div>
+            {% endfor %}
+            <div class="col-lg-2 col-md-4 col-6">
+                <a href="{% url 'catalog:product_list' %}" class="card text-center border border-dashed p-3 h-100 text-decoration-none shadow-sm d-flex flex-column align-items-center justify-content-center" style="border-radius: var(--radius-md); background: #f8fafc;">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center bg-secondary-subtle text-secondary mb-2" style="width: 44px; height: 44px; font-size: 1.25rem;">
+                        <i class="bi bi-arrow-right"></i>
+                    </div>
+                    <span class="fw-bold text-secondary small">View All</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. Featured Products Section -->
+    <section class="mb-5">
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <div>
+                <span class="text-primary fw-bold text-uppercase small tracking-wide">Handpicked For You</span>
+                <h3 class="fw-bold text-dark mb-0">Featured Products</h3>
+            </div>
+            <a href="{% url 'catalog:product_list' %}?sort=popular" class="fw-semibold text-primary d-flex align-items-center gap-1">
+                Explore More <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+
+        <div class="row g-4">
+            {% for product in featured_products|slice:":4" %}
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    {% include 'catalog/includes/product_card.html' %}
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- 5. Promotional Split Banners -->
+    <section class="mb-5">
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="p-4 p-lg-5 rounded-4 text-white position-relative overflow-hidden shadow-sm" style="background: linear-gradient(135deg, #1e3a8a, #3b82f6);">
+                    <span class="badge bg-white text-primary mb-2 px-3 py-1 fw-bold">PRO AUDIO & TECH</span>
+                    <h3 class="fw-bold mb-2">Immersive Audio Essentials</h3>
+                    <p class="text-white-50 mb-4">Studio-grade headphones and speakers with up to 30% discount this week.</p>
+                    <a href="{% url 'catalog:product_list_by_category' 'electronics' %}" class="btn btn-light rounded-pill px-4 fw-bold">
+                        Shop Electronics <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="p-4 p-lg-5 rounded-4 text-white position-relative overflow-hidden shadow-sm" style="background: linear-gradient(135deg, #831843, #ec4899);">
+                    <span class="badge bg-white text-danger mb-2 px-3 py-1 fw-bold">LUXURY APPAREL</span>
+                    <h3 class="fw-bold mb-2">Crafted Italian Leather</h3>
+                    <p class="text-white-50 mb-4">Handcrafted Chelsea boots and pure merino wool sweaters for effortless style.</p>
+                    <a href="{% url 'catalog:product_list_by_category' 'fashion' %}" class="btn btn-light rounded-pill px-4 fw-bold">
+                        Shop Fashion <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. Best-Selling Products Section -->
+    <section class="mb-5">
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <div>
+                <span class="text-primary fw-bold text-uppercase small tracking-wide">Customer Favorites</span>
+                <h3 class="fw-bold text-dark mb-0">Best-Selling Products</h3>
+            </div>
+            <a href="{% url 'catalog:product_list' %}?sort=popular" class="fw-semibold text-primary d-flex align-items-center gap-1">
+                View All Best Sellers <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+
+        <div class="row g-4">
+            {% for product in best_sellers|slice:":4" %}
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    {% include 'catalog/includes/product_card.html' %}
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- 7. New Arrivals Section -->
+    <section class="mb-5">
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <div>
+                <span class="text-primary fw-bold text-uppercase small tracking-wide">Just Landed</span>
+                <h3 class="fw-bold text-dark mb-0">New Arrivals</h3>
+            </div>
+            <a href="{% url 'catalog:product_list' %}?sort=newest" class="fw-semibold text-primary d-flex align-items-center gap-1">
+                View All New <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+
+        <div class="row g-4">
+            {% for product in new_arrivals|slice:":4" %}
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    {% include 'catalog/includes/product_card.html' %}
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- 8. Verified Customer Reviews & Testimonials -->
+    <section class="mb-5 py-4 bg-white rounded-4 p-4 p-lg-5 border shadow-sm">
+        <div class="text-center mb-5">
+            <span class="badge bg-primary-subtle text-primary px-3 py-1 fw-bold rounded-pill mb-2">REPUTATION & TRUST</span>
+            <h3 class="fw-bold text-dark">Loved by Thousands of Shoppers</h3>
+            <p class="text-muted">Real reviews from verified customers across the globe</p>
+        </div>
+
+        <div class="row g-4">
+            {% for rev in recent_reviews|slice:":3" %}
+                <div class="col-md-4">
+                    <div class="p-4 rounded-3 h-100 bg-light border">
+                        <div class="text-warning mb-2 fs-5">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= rev.rating %}
+                                    <i class="bi bi-star-fill"></i>
+                                {% else %}
+                                    <i class="bi bi-star"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <h6 class="fw-bold text-dark mb-2">"{{ rev.title }}"</h6>
+                        <p class="text-secondary small mb-3">
+                            {{ rev.comment|truncatewords:25 }}
+                        </p>
+                        <div class="d-flex align-items-center gap-2 pt-2 border-top">
+                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fw-bold" style="width: 32px; height: 32px; font-size: 0.8rem;">
+                                {{ rev.user.username|first|upper }}
+                            </div>
+                            <div>
+                                <div class="fw-bold small text-dark">{{ rev.user.get_full_name|default:rev.user.username }}</div>
+                                <small class="text-muted d-block" style="font-size: 0.75rem;">Verified Buyer · {{ rev.product.name|truncatechars:20 }}</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12 text-center text-muted">
+                    No customer reviews yet.
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+
+</div>
+{% endblock %}

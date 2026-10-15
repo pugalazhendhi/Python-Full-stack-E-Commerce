@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% load static humanize %}
+
+{% block title %}My Orders — ShopSphere{% endblock %}
+
+{% block content %}
+<div class="container">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1"><i class="bi bi-box-seam me-2"></i> Order History</h2>
+            <p class="text-muted small mb-0">Track shipments, download invoices, or manage previous purchases</p>
+        </div>
+        <a href="{% url 'catalog:product_list' %}" class="btn btn-outline-primary btn-sm rounded-pill">
+            <i class="bi bi-plus-circle"></i> Shop New Items
+        </a>
+    </div>
+
+    {% if orders %}
+        <div class="row g-4">
+            {% for order in orders %}
+                <div class="col-12">
+                    <div class="card border rounded-4 shadow-sm overflow-hidden bg-white">
+                        
+                        <!-- Order Card Header -->
+                        <div class="card-header bg-light border-bottom p-3 d-flex flex-wrap justify-content-between align-items-center gap-3">
+                            <div class="d-flex flex-wrap align-items-center gap-4">
+                                <div>
+                                    <small class="text-muted text-uppercase d-block" style="font-size: 0.75rem;">Order Placed</small>
+                                    <strong class="text-dark small">{{ order.created_at|date:"M d, Y" }}</strong>
+                                </div>
+                                <div>
+                                    <small class="text-muted text-uppercase d-block" style="font-size: 0.75rem;">Total Amount</small>
+                                    <strong class="text-dark small">${{ order.total_amount|floatformat:2|intcomma }}</strong>
+                                </div>
+                                <div>
+                                    <small class="text-muted text-uppercase d-block" style="font-size: 0.75rem;">Ship To</small>
+                                    <span class="text-dark small">{{ order.shipping_full_name }}</span>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center gap-3">
+                                <span class="badge {{ order.status_badge_class }} text-uppercase px-3 py-1 rounded-pill small">
+                                    {{ order.get_status_display }}
+                                </span>
+                                <div class="font-monospace text-muted small">#{{ order.order_number }}</div>
+                            </div>
+                        </div>
+
+                        <!-- Order Card Body -->
+                        <div class="card-body p-4">
+                            <div class="row align-items-center">
+                                <div class="col-lg-8">
+                                    <div class="d-flex flex-wrap gap-3">
+                                        {% for item in order.items.all|slice:":4" %}
+                                            <div class="d-flex align-items-center gap-2 border rounded-3 p-2 bg-light" style="max-width: 260px;">
+                                                {% if item.product_image_url %}
+                                                    <img src="{{ item.product_image_url }}" alt="{{ item.product_name }}" class="rounded-2" style="width: 44px; height: 44px; object-fit: cover;">
+                                                {% else %}
+                                                    <img src="{% static 'images/placeholder.svg' %}" alt="{{ item.product_name }}" class="rounded-2" style="width: 44px; height: 44px; object-fit: cover;">
+                                                {% endif %}
+                                                <div class="min-w-0">
+                                                    <div class="fw-semibold text-truncate small text-dark" style="max-width: 170px;">{{ item.product_name }}</div>
+                                                    <small class="text-muted">{{ item.quantity }}x · ${{ item.unit_price|floatformat:2 }}</small>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                        {% if order.items.count > 4 %}
+                                            <div class="d-flex align-items-center justify-content-center p-2 rounded-3 border bg-light text-muted small fw-bold">
+                                                +{{ order.items.count|add:'-4' }} more
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                                    <a href="{% url 'orders:order_detail' order.order_number %}" class="btn btn-outline-primary btn-sm rounded-pill px-3 fw-semibold">
+                                        View Order & Invoice <i class="bi bi-chevron-right ms-1"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="card border rounded-4 text-center p-5 bg-white shadow-sm my-5">
+            <div class="mb-3 text-muted">
+                <div class="rounded-circle bg-light d-inline-flex p-4 text-primary">
+                    <i class="bi bi-box-seam fs-1"></i>
+                </div>
+            </div>
+            <h3 class="fw-bold text-dark mb-2">No Orders Placed Yet</h3>
+            <p class="text-secondary mb-4 mx-auto" style="max-width: 420px;">
+                You haven't placed any orders with ShopSphere yet. Once you make a purchase, tracking and invoices will appear right here.
+            </p>
+            <div>
+                <a href="{% url 'catalog:product_list' %}" class="btn btn-primary rounded-pill px-4 py-2 fw-semibold shadow">
+                    Start Shopping
+                </a>
+            </div>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

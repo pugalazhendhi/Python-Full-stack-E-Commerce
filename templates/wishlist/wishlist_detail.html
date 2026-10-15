@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% load static humanize %}
+
+{% block title %}My Wishlist — ShopSphere{% endblock %}
+
+{% block content %}
+<div class="container">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1"><i class="bi bi-heart me-2 text-danger"></i> Saved Wishlist</h2>
+            <p class="text-muted small mb-0">Products you've saved to buy later or monitor for price drops</p>
+        </div>
+        <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-2 fw-semibold">
+            {{ wishlist.total_items }} Items Saved
+        </span>
+    </div>
+
+    {% if items %}
+        <div class="row g-4">
+            {% for item in items %}
+                <div class="col-xl-3 col-lg-4 col-md-6" id="wishlistCard_{{ item.product.id }}">
+                    <div class="product-card shadow-sm h-100">
+                        <div class="product-image-container">
+                            <a href="{% url 'catalog:product_detail' item.product.slug %}">
+                                {% if item.product.cover_image %}
+                                    <img src="{{ item.product.cover_image.url }}" alt="{{ item.product.name }}">
+                                {% else %}
+                                    <img src="{% static 'images/placeholder.svg' %}" alt="{{ item.product.name }}">
+                                {% endif %}
+                            </a>
+                            
+                            <a href="{% url 'wishlist:toggle_wishlist' item.product.id %}" class="wishlist-btn-corner active text-danger" title="Remove from Wishlist">
+                                <i class="bi bi-heart-fill"></i>
+                            </a>
+                        </div>
+
+                        <div class="product-card-body">
+                            <div class="product-category-meta">
+                                {{ item.product.category.name }}
+                            </div>
+
+                            <h5 class="product-title">
+                                <a href="{% url 'catalog:product_detail' item.product.slug %}" class="text-decoration-none">
+                                    {{ item.product.name }}
+                                </a>
+                            </h5>
+
+                            <div class="product-price-wrapper">
+                                <span class="current-price">${{ item.product.price|floatformat:2|intcomma }}</span>
+                                {% if item.product.original_price and item.product.original_price > item.product.price %}
+                                    <span class="original-price">${{ item.product.original_price|floatformat:2|intcomma }}</span>
+                                {% endif %}
+                            </div>
+
+                            <div class="mt-2 d-flex flex-column gap-2">
+                                {% if item.product.is_in_stock %}
+                                    <a href="{% url 'wishlist:move_to_cart' item.product.id %}" class="btn btn-primary btn-sm rounded-pill w-100 fw-semibold d-flex align-items-center justify-content-center gap-1">
+                                        <i class="bi bi-bag-plus"></i> Move to Cart
+                                    </a>
+                                {% else %}
+                                    <button class="btn btn-light btn-sm rounded-pill w-100 text-muted border" disabled>
+                                        Out of Stock
+                                    </button>
+                                {% endif %}
+                                <a href="{% url 'wishlist:toggle_wishlist' item.product.id %}" class="btn btn-outline-danger btn-sm rounded-pill w-100 fw-semibold">
+                                    <i class="bi bi-trash"></i> Remove
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="card border rounded-4 text-center p-5 bg-white shadow-sm my-5">
+            <div class="mb-3 text-muted">
+                <div class="rounded-circle bg-light d-inline-flex p-4 text-danger">
+                    <i class="bi bi-heart fs-1"></i>
+                </div>
+            </div>
+            <h3 class="fw-bold text-dark mb-2">Your Wishlist is Empty</h3>
+            <p class="text-secondary mb-4 mx-auto" style="max-width: 420px;">
+                Found something you like? Click the heart icon on any product card to save it here for later.
+            </p>
+            <div>
+                <a href="{% url 'catalog:product_list' %}" class="btn btn-primary rounded-pill px-4 py-2 fw-semibold shadow">
+                    Browse Store Catalog
+                </a>
+            </div>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

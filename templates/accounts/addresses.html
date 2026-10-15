@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Addresses — ShopSphere{% endblock %}
+
+{% block content %}
+<div class="container">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1"><i class="bi bi-geo-alt me-2 text-primary"></i> Saved Addresses</h2>
+            <p class="text-muted small mb-0">Manage your shipping and billing delivery destinations</p>
+        </div>
+        <a href="{% url 'accounts:add_address' %}" class="btn btn-primary btn-sm rounded-pill px-3 fw-semibold">
+            <i class="bi bi-plus-circle me-1"></i> Add New Address
+        </a>
+    </div>
+
+    {% if addresses %}
+        <div class="row g-4">
+            {% for addr in addresses %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card border rounded-4 shadow-sm p-4 bg-white h-100 position-relative {% if addr.is_default %}border-primary{% endif %}">
+                        {% if addr.is_default %}
+                            <span class="badge bg-primary position-absolute top-0 end-0 m-3 px-2 py-1 rounded-pill">
+                                Default Shipping
+                            </span>
+                        {% endif %}
+
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <i class="bi {% if addr.address_type == 'home' %}bi-house-door{% elif addr.address_type == 'work' %}bi-building{% else %}bi-geo-alt{% endif %} text-primary fs-5"></i>
+                            <h5 class="fw-bold text-dark mb-0">{{ addr.full_name }}</h5>
+                        </div>
+
+                        <div class="small text-secondary mb-1">{{ addr.address_line1 }}</div>
+                        {% if addr.address_line2 %}<div class="small text-secondary mb-1">{{ addr.address_line2 }}</div>{% endif %}
+                        <div class="small text-secondary mb-2">{{ addr.city }}, {{ addr.state }} {{ addr.postal_code }}</div>
+                        <div class="small text-secondary mb-3"><i class="bi bi-telephone me-1"></i> {{ addr.phone_number }}</div>
+
+                        <div class="mt-auto pt-3 border-top d-flex gap-2">
+                            <a href="{% url 'accounts:edit_address' addr.id %}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                                Edit
+                            </a>
+                            {% if not addr.is_default %}
+                                <a href="{% url 'accounts:set_default_address' addr.id %}" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                                    Set Default
+                                </a>
+                                <a href="{% url 'accounts:delete_address' addr.id %}" class="btn btn-outline-danger btn-sm rounded-pill px-2">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="card border rounded-4 text-center p-5 bg-white shadow-sm my-5">
+            <div class="mb-3 text-muted">
+                <i class="bi bi-geo-alt fs-1"></i>
+            </div>
+            <h4 class="fw-bold text-dark mb-2">No Saved Addresses</h4>
+            <p class="text-secondary mb-4 mx-auto" style="max-width: 400px;">
+                Add your primary home or office delivery address for fast 1-click checkout.
+            </p>
+            <div>
+                <a href="{% url 'accounts:add_address' %}" class="btn btn-primary rounded-pill px-4 fw-semibold shadow">
+                    Add Address Now
+                </a>
+            </div>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

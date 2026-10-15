@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% load static humanize %}
+
+{% block title %}Order Confirmed #{{ order.order_number }} — ShopSphere{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            
+            <!-- Success Card -->
+            <div class="card border rounded-4 shadow-sm p-4 p-md-5 bg-white text-center mb-4">
+                <div class="mb-3">
+                    <div class="rounded-circle bg-success text-white d-inline-flex align-items-center justify-content-center shadow" style="width: 72px; height: 72px; font-size: 2.2rem;">
+                        <i class="bi bi-check-lg"></i>
+                    </div>
+                </div>
+                
+                <span class="badge bg-success-subtle text-success px-3 py-1 rounded-pill fw-bold text-uppercase mb-2">Order Confirmed</span>
+                <h2 class="fw-bold text-dark mb-2">Thank you for your order, {{ order.shipping_full_name }}!</h2>
+                <p class="text-secondary mb-4 mx-auto" style="max-width: 500px;">
+                    We've received your order and our fulfillment team has started preparing your package. A confirmation has been registered to <strong>{{ order.user.email }}</strong>.
+                </p>
+
+                <div class="p-3 bg-light rounded-3 d-inline-flex align-items-center gap-3 border mx-auto mb-4">
+                    <span class="text-muted small">Order Number:</span>
+                    <span class="fw-bold text-primary font-monospace fs-5">#{{ order.order_number }}</span>
+                </div>
+
+                <div class="d-flex flex-wrap justify-content-center gap-3">
+                    <a href="{% url 'orders:order_detail' order.order_number %}" class="btn btn-primary rounded-pill px-4 fw-semibold shadow">
+                        <i class="bi bi-file-earmark-text me-1"></i> View Order Details / Invoice
+                    </a>
+                    <a href="{% url 'catalog:product_list' %}" class="btn btn-outline-secondary rounded-pill px-4 fw-semibold">
+                        Continue Shopping
+                    </a>
+                </div>
+            </div>
+
+            <!-- Order Summary Card -->
+            <div class="card border rounded-4 shadow-sm p-4 bg-white mb-4">
+                <h5 class="fw-bold mb-4">Order Details</h5>
+
+                <div class="row g-4 mb-4">
+                    <div class="col-sm-6">
+                        <label class="small text-muted text-uppercase fw-bold">Delivery Address</label>
+                        <div class="fw-bold text-dark mt-1">{{ order.shipping_full_name }}</div>
+                        <div class="small text-secondary">{{ order.shipping_address_line1 }}</div>
+                        {% if order.shipping_address_line2 %}<div class="small text-secondary">{{ order.shipping_address_line2 }}</div>{% endif %}
+                        <div class="small text-secondary">{{ order.shipping_city }}, {{ order.shipping_state }} {{ order.shipping_postal_code }}</div>
+                        <div class="small text-secondary"><i class="bi bi-telephone me-1"></i> {{ order.shipping_phone }}</div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="small text-muted text-uppercase fw-bold">Payment & Status</label>
+                        <div class="mt-1">
+                            <span class="badge {{ order.status_badge_class }} text-uppercase px-2 py-1 mb-1">{{ order.get_status_display }}</span>
+                        </div>
+                        <div class="small text-secondary">
+                            Payment Method: <strong>{{ order.get_payment_method_display }}</strong>
+                        </div>
+                        <div class="small text-secondary">
+                            Payment Status: <span class="badge bg-secondary-subtle text-secondary">{{ order.get_payment_status_display }}</span>
+                        </div>
+                        <div class="small text-secondary mt-1">
+                            Order Date: {{ order.created_at|date:"M d, Y h:i A" }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Items Table -->
+                <div class="table-responsive border rounded-3 mb-4">
+                    <table class="table align-middle mb-0">
+                        <thead class="table-light small text-uppercase text-muted">
+                            <tr>
+                                <th class="ps-3">Item</th>
+                                <th>Unit Price</th>
+                                <th>Quantity</th>
+                                <th class="pe-3 text-end">Line Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in order.items.all %}
+                                <tr>
+                                    <td class="ps-3 py-3">
+                                        <div class="d-flex align-items-center gap-3">
+                                            {% if item.product_image_url %}
+                                                <img src="{{ item.product_image_url }}" alt="{{ item.product_name }}" class="rounded-2 border" style="width: 44px; height: 44px; object-fit: cover;">
+                                            {% else %}
+                                                <img src="{% static 'images/placeholder.svg' %}" alt="{{ item.product_name }}" class="rounded-2 border" style="width: 44px; height: 44px; object-fit: cover;">
+                                            {% endif %}
+                                            <div>
+                                                <div class="fw-bold text-dark small">{{ item.product_name }}</div>
+                                                <small class="text-muted">SKU: {{ item.product_sku|default:"N/A" }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>${{ item.unit_price|floatformat:2 }}</td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td class="pe-3 text-end fw-bold text-dark">${{ item.total_price|floatformat:2 }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Financial Breakdown -->
+                <div class="row justify-content-end">
+                    <div class="col-md-6">
+                        <div class="d-flex justify-content-between mb-2 small">
+                            <span class="text-muted">Subtotal:</span>
+                            <span class="fw-semibold">${{ order.subtotal|floatformat:2|intcomma }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2 small">
+                            <span class="text-muted">Shipping Fee:</span>
+                            <span class="fw-semibold">{% if order.shipping_fee == 0 %}FREE{% else %}${{ order.shipping_fee|floatformat:2 }}{% endif %}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2 small">
+                            <span class="text-muted">Taxes (5%):</span>
+                            <span class="fw-semibold">${{ order.tax_amount|floatformat:2 }}</span>
+                        </div>
+                        {% if order.discount_amount > 0 %}
+                            <div class="d-flex justify-content-between mb-2 small text-success">
+                                <span>Discount ({{ order.coupon_code_snapshot|default:'Promo' }}):</span>
+                                <span class="fw-bold">-${{ order.discount_amount|floatformat:2 }}</span>
+                            </div>
+                        {% endif %}
+                        <hr class="my-2">
+                        <div class="d-flex justify-content-between fs-5 fw-bold text-dark">
+                            <span>Total:</span>
+                            <span class="text-primary">${{ order.total_amount|floatformat:2|intcomma }}</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

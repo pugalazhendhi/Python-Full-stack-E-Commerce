@@ -1,0 +1,92 @@
+{% load static humanize %}
+<div class="product-card shadow-sm">
+    <!-- Image & Top Corner Badges -->
+    <div class="product-image-container">
+        <a href="{% url 'catalog:product_detail' product.slug %}">
+            {% if product.cover_image %}
+                <img src="{{ product.cover_image.url }}" alt="{{ product.name }}" loading="lazy">
+            {% else %}
+                <img src="{% static 'images/placeholder.svg' %}" alt="{{ product.name }}" loading="lazy">
+            {% endif %}
+        </a>
+
+        <!-- Discount & Status Badges -->
+        <div class="card-badge-group">
+            {% if product.discount_percentage > 0 %}
+                <span class="badge-discount">-{{ product.discount_percentage }}%</span>
+            {% endif %}
+            {% if not product.is_in_stock %}
+                <span class="badge bg-dark text-white badge-status">Out of Stock</span>
+            {% elif product.stock <= 5 %}
+                <span class="badge bg-warning text-dark badge-status">Only {{ product.stock }} left!</span>
+            {% elif product.is_new_arrival %}
+                <span class="badge bg-success text-white badge-status">New</span>
+            {% endif %}
+        </div>
+
+        <!-- Wishlist Heart Toggle Button -->
+        <button 
+            type="button" 
+            class="wishlist-btn-corner btn-toggle-wishlist {% if product.id in wishlist_product_ids %}active{% endif %}" 
+            data-product-id="{{ product.id }}"
+            title="Save to Wishlist"
+            aria-label="Save to Wishlist"
+        >
+            <i class="bi {% if product.id in wishlist_product_ids %}bi-heart-fill{% else %}bi-heart{% endif %}"></i>
+        </button>
+    </div>
+
+    <!-- Card Content Body -->
+    <div class="product-card-body">
+        <div class="product-category-meta">
+            {{ product.category.name }}
+        </div>
+
+        <h5 class="product-title">
+            <a href="{% url 'catalog:product_detail' product.slug %}" class="text-decoration-none">
+                {{ product.name }}
+            </a>
+        </h5>
+
+        <!-- Star Ratings -->
+        <div class="product-rating">
+            <div class="d-inline-flex">
+                {% for i in "12345" %}
+                    {% if forloop.counter <= product.rating_average %}
+                        <i class="bi bi-star-fill"></i>
+                    {% else %}
+                        <i class="bi bi-star"></i>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            <span class="rating-count-text">
+                ({{ product.rating_count }})
+            </span>
+        </div>
+
+        <!-- Price Breakdown -->
+        <div class="product-price-wrapper">
+            <span class="current-price">${{ product.price|floatformat:2|intcomma }}</span>
+            {% if product.original_price and product.original_price > product.price %}
+                <span class="original-price">${{ product.original_price|floatformat:2|intcomma }}</span>
+            {% endif %}
+        </div>
+
+        <!-- Action Button -->
+        <div class="mt-2">
+            {% if product.is_in_stock %}
+                <button 
+                    type="button" 
+                    class="btn btn-outline-primary btn-sm rounded-pill w-100 fw-semibold btn-add-to-cart-ajax d-flex align-items-center justify-content-center gap-1"
+                    data-product-id="{{ product.id }}"
+                >
+                    <i class="bi bi-cart-plus"></i> Add to Cart
+                </button>
+            {% else %}
+                <button type="button" class="btn btn-light btn-sm rounded-pill w-100 text-muted border" disabled>
+                    <i class="bi bi-slash-circle"></i> Out of Stock
+                </button>
+            {% endif %}
+        </div>
+    </div>
+</div>

@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load static humanize %}
+
+{% block title %}Cancel Order #{{ order.order_number }} — ShopSphere{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border rounded-4 shadow-sm p-4 text-center bg-white">
+                <div class="mb-3 text-danger">
+                    <i class="bi bi-exclamation-triangle fs-1"></i>
+                </div>
+                <h4 class="fw-bold text-dark mb-2">Cancel Order #{{ order.order_number }}?</h4>
+                <p class="text-secondary small mb-4">
+                    Are you sure you want to cancel this order? Once cancelled, your items will be returned to the store inventory and this action cannot be undone.
+                </p>
+
+                <div class="p-3 bg-light rounded-3 text-start mb-4 border small">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="text-muted">Total Amount:</span>
+                        <strong class="text-dark">${{ order.total_amount|floatformat:2|intcomma }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="text-muted">Payment:</span>
+                        <span>{{ order.get_payment_method_display }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="text-muted">Status:</span>
+                        <span class="badge {{ order.status_badge_class }}">{{ order.get_status_display }}</span>
+                    </div>
+                </div>
+
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-center gap-2">
+                        <a href="{% url 'orders:order_detail' order.order_number %}" class="btn btn-outline-secondary rounded-pill px-4 fw-semibold">
+                            Keep My Order
+                        </a>
+                        <button type="submit" class="btn btn-danger rounded-pill px-4 fw-semibold shadow-sm">
+                            Yes, Cancel Order
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
