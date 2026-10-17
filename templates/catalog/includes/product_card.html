@@ -66,9 +66,9 @@
 
         <!-- Price Breakdown -->
         <div class="product-price-wrapper">
-            <span class="current-price">${{ product.price|floatformat:2|intcomma }}</span>
+            <span class="current-price">₹{{ product.price|floatformat:2|intcomma }}</span>
             {% if product.original_price and product.original_price > product.price %}
-                <span class="original-price">${{ product.original_price|floatformat:2|intcomma }}</span>
+                <span class="original-price">₹{{ product.original_price|floatformat:2|intcomma }}</span>
             {% endif %}
         </div>
 

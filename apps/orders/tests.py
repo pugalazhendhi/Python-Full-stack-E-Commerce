@@ -154,3 +154,33 @@ class OrdersTestCase(TestCase):
         response = self.client.get(url)
         # Should return 404 (user2 is not allowed to view user1's order)
         self.assertEqual(response.status_code, 404)
+
+    def test_place_order_gpay_upi(self):
+        self.client.login(username='buyer1', password='Password@123')
+        
+        cart = Cart.objects.create(user=self.user1)
+        CartItem.objects.create(cart=cart, product=self.product, quantity=1)
+
+        url = reverse('orders:place_order')
+        response = self.client.post(url, {
+            'address_id': self.address.id,
+            'payment_method': 'gpay',
+            'transaction_id': 'UPI-REF-987654321',
+            'customer_notes': 'GPay payment completed'
+        })
+        self.assertEqual(response.status_code, 302)
+
+        order = Order.objects.filter(user=self.user1, payment_method='gpay').first()
+        self.assertIsNotNone(order)
+        self.assertEqual(order.payment_status, 'pending_verification')
+        self.assertEqual(order.transaction_id, 'UPI-REF-987654321')
+        self.assertIn('shopsphere@okaxis', order.upi_payment_url)
+        self.assertIn('api.qrserver.com', order.upi_qr_code_url)
+
+        # Confirm order page contains GPay indicators and Rupee
+        confirm_url = reverse('orders:order_confirmation', kwargs={'order_number': order.order_number})
+        confirm_resp = self.client.get(confirm_url)
+        self.assertEqual(confirm_resp.status_code, 200)
+        self.assertContains(confirm_resp, 'Google Pay / PhonePe / UPI')
+        self.assertContains(confirm_resp, 'shopsphere@okaxis')
+        self.assertContains(confirm_resp, '₹')

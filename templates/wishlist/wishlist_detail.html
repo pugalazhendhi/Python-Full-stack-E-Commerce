@@ -47,9 +47,9 @@
                             </h5>
 
                             <div class="product-price-wrapper">
-                                <span class="current-price">${{ item.product.price|floatformat:2|intcomma }}</span>
+                                <span class="current-price">₹{{ item.product.price|floatformat:2|intcomma }}</span>
                                 {% if item.product.original_price and item.product.original_price > item.product.price %}
-                                    <span class="original-price">${{ item.product.original_price|floatformat:2|intcomma }}</span>
+                                    <span class="original-price">₹{{ item.product.original_price|floatformat:2|intcomma }}</span>
                                 {% endif %}
                             </div>
 

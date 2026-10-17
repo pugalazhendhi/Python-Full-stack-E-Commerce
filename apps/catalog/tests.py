@@ -54,7 +54,7 @@ class CatalogTestCase(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.product1.name)
-        self.assertContains(response, '$199.99')
+        self.assertContains(response, '₹199.99')
 
     def test_add_review_updates_product_rating(self):
         self.client.login(username='reviewer', password='Password@123')

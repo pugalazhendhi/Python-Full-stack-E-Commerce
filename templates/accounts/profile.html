@@ -121,7 +121,7 @@
                                             {{ order.get_status_display }}
                                         </span>
                                     </td>
-                                    <td class="fw-bold">${{ order.total_amount|floatformat:2|intcomma }}</td>
+                                    <td class="fw-bold">₹{{ order.total_amount|floatformat:2|intcomma }}</td>
                                     <td class="pe-4 text-end">
                                         <a href="{% url 'orders:order_detail' order.order_number %}" class="btn btn-outline-primary btn-sm rounded-pill px-3">
                                             Details

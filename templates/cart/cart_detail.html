@@ -45,7 +45,7 @@
                     <div class="d-flex justify-content-between align-items-center mb-2 small">
                         {% if amount_needed_for_free_shipping > 0 %}
                             <span class="fw-semibold text-dark">
-                                <i class="bi bi-truck text-primary me-1"></i> Add <strong>${{ amount_needed_for_free_shipping|floatformat:2 }}</strong> more to unlock <strong>FREE Express Delivery</strong>!
+                                <i class="bi bi-truck text-primary me-1"></i> Add <strong>₹{{ amount_needed_for_free_shipping|floatformat:2 }}</strong> more to unlock <strong>FREE Express Delivery</strong>!
                             </span>
                         {% else %}
                             <span class="fw-bold text-success">
@@ -101,7 +101,7 @@
 
                                         <!-- Unit Price -->
                                         <td>
-                                            <span class="fw-semibold">${{ item.product.price|floatformat:2|intcomma }}</span>
+                                            <span class="fw-semibold">₹{{ item.product.price|floatformat:2|intcomma }}</span>
                                         </td>
 
                                         <!-- Quantity Update Form -->
@@ -122,7 +122,7 @@
 
                                         <!-- Line Total -->
                                         <td>
-                                            <span class="fw-bold text-primary">${{ item.total_price|floatformat:2|intcomma }}</span>
+                                            <span class="fw-bold text-primary">₹{{ item.total_price|floatformat:2|intcomma }}</span>
                                         </td>
 
                                         <!-- Remove Action -->
@@ -152,7 +152,7 @@
 
                     <div class="d-flex justify-content-between mb-2">
                         <span class="text-secondary">Subtotal ({{ cart.total_items }} items)</span>
-                        <span class="fw-semibold text-dark">${{ subtotal|floatformat:2|intcomma }}</span>
+                        <span class="fw-semibold text-dark">₹{{ subtotal|floatformat:2|intcomma }}</span>
                     </div>
 
                     <div class="d-flex justify-content-between mb-2">
@@ -160,20 +160,20 @@
                         {% if shipping_fee == 0 %}
                             <span class="fw-bold text-success">FREE</span>
                         {% else %}
-                            <span class="fw-semibold text-dark">${{ shipping_fee|floatformat:2 }}</span>
+                            <span class="fw-semibold text-dark">₹{{ shipping_fee|floatformat:2 }}</span>
                         {% endif %}
                     </div>
 
                     <div class="d-flex justify-content-between mb-3">
                         <span class="text-secondary">Estimated Tax (5%)</span>
-                        <span class="fw-semibold text-dark">${{ tax_amount|floatformat:2 }}</span>
+                        <span class="fw-semibold text-dark">₹{{ tax_amount|floatformat:2 }}</span>
                     </div>
 
                     <hr class="my-3">
 
                     <div class="d-flex justify-content-between align-items-baseline mb-4">
                         <span class="fs-5 fw-bold text-dark">Estimated Total</span>
-                        <span class="fs-4 fw-bold text-primary">${{ grand_total|floatformat:2|intcomma }}</span>
+                        <span class="fs-4 fw-bold text-primary">₹{{ grand_total|floatformat:2|intcomma }}</span>
                     </div>
 
                     <a href="{% url 'orders:checkout' %}" class="btn btn-primary btn-lg rounded-pill w-100 fw-bold mb-3 shadow">

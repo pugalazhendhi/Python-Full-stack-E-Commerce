@@ -207,7 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                             <div class="fw-semibold text-truncate" style="max-width: 280px;">${item.name}</div>
                                             <small class="text-muted">${item.category}</small>
                                         </div>
-                                        <span class="fw-bold text-primary">$${item.price}</span>
+                                        <span class="fw-bold text-primary">₹${item.price}</span>
                                     </a>
                                 `;
                             });

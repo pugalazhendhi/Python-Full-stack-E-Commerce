@@ -41,8 +41,8 @@ def checkout_view(request):
             return redirect('cart:cart_detail')
 
     subtotal = cart.subtotal
-    free_shipping_threshold = Decimal(str(getattr(settings, 'FREE_SHIPPING_THRESHOLD', 500.00)))
-    base_shipping_fee = Decimal(str(getattr(settings, 'SHIPPING_FEE', 50.00)))
+    free_shipping_threshold = Decimal(str(getattr(settings, 'FREE_SHIPPING_THRESHOLD', 999.00)))
+    base_shipping_fee = Decimal(str(getattr(settings, 'SHIPPING_FEE', 49.00)))
 
     if subtotal >= free_shipping_threshold or subtotal == Decimal('0.00'):
         shipping_fee = Decimal('0.00')
@@ -74,6 +74,13 @@ def checkout_view(request):
     addresses = request.user.addresses.all()
     default_address = addresses.filter(is_default=True).first() or addresses.first()
 
+    # Dynamic GPay UPI Deep Link & QR Code
+    from urllib.parse import quote
+    merchant_vpa = "shopsphere@okaxis"
+    merchant_name = quote("ShopSphere Store")
+    upi_intent_url = f"upi://pay?pa={merchant_vpa}&pn={merchant_name}&am={grand_total:.2f}&cu=INR&tn=ShopSphere_Order"
+    upi_qr_code_url = f"https://api.qrserver.com/v1/create-qr-code/?size=260x260&margin=8&data={quote(upi_intent_url)}"
+
     context = {
         'cart': cart,
         'cart_items': cart_items,
@@ -85,6 +92,9 @@ def checkout_view(request):
         'discount_amount': discount_amount,
         'grand_total': grand_total,
         'coupon': coupon,
+        'upi_vpa': merchant_vpa,
+        'upi_qr_code_url': upi_qr_code_url,
+        'upi_intent_url': upi_intent_url,
     }
     return render(request, 'orders/checkout.html', context)
 
@@ -200,8 +210,8 @@ def place_order_view(request):
 
             # 2. Strict Server-side Pricing calculations
             subtotal = cart.subtotal
-            free_shipping_threshold = Decimal(str(getattr(settings, 'FREE_SHIPPING_THRESHOLD', 500.00)))
-            base_shipping_fee = Decimal(str(getattr(settings, 'SHIPPING_FEE', 50.00)))
+            free_shipping_threshold = Decimal(str(getattr(settings, 'FREE_SHIPPING_THRESHOLD', 999.00)))
+            base_shipping_fee = Decimal(str(getattr(settings, 'SHIPPING_FEE', 49.00)))
 
             if subtotal >= free_shipping_threshold or subtotal == Decimal('0.00'):
                 shipping_fee = Decimal('0.00')
@@ -228,6 +238,12 @@ def place_order_view(request):
 
             grand_total = max(Decimal('0.00'), subtotal + shipping_fee + tax_amount - discount_amount)
 
+            # Payment status determination
+            transaction_id = request.POST.get('transaction_id', '').strip()
+            payment_status = 'unpaid'
+            if payment_method == 'gpay':
+                payment_status = 'pending_verification' if transaction_id else 'unpaid'
+
             # 3. Create Order
             order = Order.objects.create(
                 order_number=generate_order_number(),
@@ -242,7 +258,8 @@ def place_order_view(request):
                 shipping_country=country,
                 status='pending',
                 payment_method=payment_method,
-                payment_status='unpaid',
+                payment_status=payment_status,
+                transaction_id=transaction_id if transaction_id else None,
                 subtotal=subtotal,
                 shipping_fee=shipping_fee,
                 tax_amount=tax_amount,

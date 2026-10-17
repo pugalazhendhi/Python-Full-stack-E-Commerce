@@ -37,8 +37,8 @@ def cart_detail_view(request):
             stock_warnings.append(f"Quantity for '{item.product.name}' adjusted to available stock ({item.product.stock}).")
 
     subtotal = cart.subtotal
-    free_shipping_threshold = Decimal(str(getattr(settings, 'FREE_SHIPPING_THRESHOLD', 500.00)))
-    base_shipping_fee = Decimal(str(getattr(settings, 'SHIPPING_FEE', 50.00)))
+    free_shipping_threshold = Decimal(str(getattr(settings, 'FREE_SHIPPING_THRESHOLD', 999.00)))
+    base_shipping_fee = Decimal(str(getattr(settings, 'SHIPPING_FEE', 49.00)))
 
     if subtotal >= free_shipping_threshold or subtotal == Decimal('0.00'):
         shipping_fee = Decimal('0.00')

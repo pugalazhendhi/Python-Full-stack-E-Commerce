@@ -77,9 +77,9 @@
 
                 <!-- Price and Savings Block -->
                 <div class="d-flex align-items-baseline gap-3 mb-3">
-                    <span class="fs-2 fw-bold text-dark">${{ product.price|floatformat:2|intcomma }}</span>
+                    <span class="fs-2 fw-bold text-dark">₹{{ product.price|floatformat:2|intcomma }}</span>
                     {% if product.original_price and product.original_price > product.price %}
-                        <span class="fs-5 text-decoration-line-through text-muted">${{ product.original_price|floatformat:2|intcomma }}</span>
+                        <span class="fs-5 text-decoration-line-through text-muted">₹{{ product.original_price|floatformat:2|intcomma }}</span>
                         <span class="badge bg-danger rounded-pill px-3 py-1">Save {{ product.discount_percentage }}%</span>
                     {% endif %}
                 </div>
@@ -160,16 +160,16 @@
                 <div class="p-3 bg-light rounded-3 border">
                     <div class="row g-2 small text-secondary">
                         <div class="col-6 d-flex align-items-center gap-2">
-                            <i class="bi bi-truck text-primary"></i> Fast Standard Shipping ($50)
+                            <i class="bi bi-truck text-primary"></i> Fast Standard Shipping (₹49)
                         </div>
                         <div class="col-6 d-flex align-items-center gap-2">
-                            <i class="bi bi-lightning text-warning"></i> Free delivery over $500
+                            <i class="bi bi-lightning text-warning"></i> Free delivery over ₹999
+                        </div>
+                        <div class="col-6 d-flex align-items-center gap-2">
+                            <i class="bi bi-qr-code-scan text-primary"></i> Google Pay & UPI QR ready
                         </div>
                         <div class="col-6 d-flex align-items-center gap-2">
                             <i class="bi bi-cash-stack text-success"></i> Cash on Delivery available
-                        </div>
-                        <div class="col-6 d-flex align-items-center gap-2">
-                            <i class="bi bi-shield-check text-info"></i> Official Manufacturer Warranty
                         </div>
                     </div>
                 </div>

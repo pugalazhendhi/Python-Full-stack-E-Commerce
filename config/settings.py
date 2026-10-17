@@ -170,7 +170,7 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 12,
 }
 
-# Cart & Order Business Settings
-SHIPPING_FEE = 50.00  # Flat standard shipping fee
-FREE_SHIPPING_THRESHOLD = 500.00  # Orders over $500 get free shipping
+# Cart & Order Business Settings (INR - Indian Rupee)
+SHIPPING_FEE = 49.00  # Flat standard shipping fee in ₹
+FREE_SHIPPING_THRESHOLD = 999.00  # Orders over ₹999 get free shipping
 TAX_RATE = 0.05  # 5% Tax

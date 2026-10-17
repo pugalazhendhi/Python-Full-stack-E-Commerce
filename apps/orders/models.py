@@ -79,11 +79,13 @@ class Order(models.Model):
 
     PAYMENT_METHODS = (
         ('cod', 'Cash on Delivery (COD)'),
+        ('gpay', 'Google Pay / PhonePe / UPI (Scan QR)'),
         ('card', 'Credit / Debit Card (Online Gateway Ready)'),
     )
 
     PAYMENT_STATUS = (
         ('unpaid', 'Unpaid'),
+        ('pending_verification', 'UPI Verification Pending'),
         ('paid', 'Paid'),
         ('refunded', 'Refunded'),
     )
@@ -174,6 +176,20 @@ class Order(models.Model):
             'cancelled': 'bg-danger',
         }
         return mapping.get(self.status, 'bg-secondary')
+
+    @property
+    def upi_payment_url(self):
+        from urllib.parse import quote
+        pa = "shopsphere@okaxis"
+        pn = quote("ShopSphere Store")
+        tn = quote(f"Order #{self.order_number}")
+        return f"upi://pay?pa={pa}&pn={pn}&am={self.total_amount:.2f}&cu=INR&tn={tn}"
+
+    @property
+    def upi_qr_code_url(self):
+        from urllib.parse import quote
+        data = quote(self.upi_payment_url)
+        return f"https://api.qrserver.com/v1/create-qr-code/?size=260x260&margin=8&data={data}"
 
 
 class OrderItem(models.Model):

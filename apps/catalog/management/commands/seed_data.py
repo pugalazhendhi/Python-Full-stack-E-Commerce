@@ -1,5 +1,6 @@
 import os
 from decimal import Decimal
+from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 from django.core.files.base import ContentFile
@@ -128,25 +129,25 @@ class Command(BaseCommand):
                 'description': '10% off your entire first purchase',
                 'discount_type': 'percentage',
                 'discount_value': Decimal('10.00'),
-                'min_purchase_amount': Decimal('50.00'),
-                'max_discount_amount': Decimal('50.00'),
+                'min_purchase_amount': Decimal('499.00'),
+                'max_discount_amount': Decimal('500.00'),
                 'valid_to': timezone.now() + timezone.timedelta(days=180),
             },
             {
-                'code': 'SAVE50',
-                'description': 'Flat $50 off on orders of $300 or more',
+                'code': 'SAVE500',
+                'description': 'Flat ₹500 off on orders of ₹2,499 or more',
                 'discount_type': 'flat',
-                'discount_value': Decimal('50.00'),
-                'min_purchase_amount': Decimal('300.00'),
+                'discount_value': Decimal('500.00'),
+                'min_purchase_amount': Decimal('2499.00'),
                 'valid_to': timezone.now() + timezone.timedelta(days=120),
             },
             {
                 'code': 'FESTIVE25',
-                'description': '25% festive discount on orders above $150',
+                'description': '25% festive discount on orders above ₹1,499',
                 'discount_type': 'percentage',
                 'discount_value': Decimal('25.00'),
-                'min_purchase_amount': Decimal('150.00'),
-                'max_discount_amount': Decimal('100.00'),
+                'min_purchase_amount': Decimal('1499.00'),
+                'max_discount_amount': Decimal('1500.00'),
                 'valid_to': timezone.now() + timezone.timedelta(days=90),
             },
         ]
@@ -208,9 +209,14 @@ class Command(BaseCommand):
                     'is_featured': cdata['is_featured'],
                 }
             )
-            # Create SVG banner
-            svg = create_svg_image(cdata['name'], cdata['description'][:40] + "...", cdata['name'], bg_color="#182234", accent_color=cdata['accent'])
-            cat.image.save(f"cat_{cat.slug}.svg", ContentFile(svg), save=True)
+            # Attach image: prioritize high-resolution photograph if available
+            real_cat_img = os.path.join(settings.MEDIA_ROOT, 'categories', f"{cat.slug}.jpg")
+            if os.path.exists(real_cat_img):
+                cat.image = f"categories/{cat.slug}.jpg"
+                cat.save()
+            elif not cat.image:
+                svg = create_svg_image(cdata['name'], cdata['description'][:40] + "...", cdata['name'], bg_color="#182234", accent_color=cdata['accent'])
+                cat.image.save(f"cat_{cat.slug}.svg", ContentFile(svg), save=True)
             cat_objs[cdata['slug']] = cat
 
         # 5. Products
@@ -223,8 +229,8 @@ class Command(BaseCommand):
                 'short_description': 'Industry-leading Active Noise Cancellation with 40-hour battery life and spatial audio.',
                 'description': 'Experience studio-grade acoustics anywhere. Aura Sound Pro features 45mm custom drivers, hybrid active noise cancellation, memory-foam ear cushions, and seamless multi-device Bluetooth 5.3 pairing. Includes premium carrying case and fast USB-C charge.',
                 'specifications': 'Driver Size: 45mm Neodymium | Battery Life: 40 Hours | Connectivity: Bluetooth 5.3 & 3.5mm Aux | Noise Cancellation: Hybrid Active ANC | Weight: 250g | Warranty: 2 Years',
-                'price': Decimal('249.99'),
-                'original_price': Decimal('329.99'),
+                'price': Decimal('2499.00'),
+                'original_price': Decimal('3299.00'),
                 'stock': 35,
                 'is_featured': True,
                 'is_bestseller': True,
@@ -238,8 +244,8 @@ class Command(BaseCommand):
                 'short_description': 'Stunning 4K Retina display, 16-Core Neural Engine, and all-day 18hr battery.',
                 'description': 'Engineered for developers, designers, and creators. Powered by an advanced 12-core processor with 32GB unified RAM and 1TB ultra-fast PCIe NVMe SSD. Ultra-light aluminum unibody chassis with MagSafe charging.',
                 'specifications': 'Processor: 12-Core High Performance CPU | RAM: 32GB Unified Memory | Storage: 1TB NVMe SSD | Display: 15.6" 4K OLED HDR (120Hz) | Battery: 18 Hours | Ports: 3x Thunderbolt 4, HDMI, SDXC',
-                'price': Decimal('1499.00'),
-                'original_price': Decimal('1799.00'),
+                'price': Decimal('89990.00'),
+                'original_price': Decimal('99990.00'),
                 'stock': 18,
                 'is_featured': True,
                 'is_bestseller': False,
@@ -253,8 +259,8 @@ class Command(BaseCommand):
                 'short_description': 'Advanced ECG, SpO2 sensor, Always-on AMOLED display, and 50m water resistance.',
                 'description': 'Stay connected and monitor your health around the clock. Features real-time heart rate tracking, sleep cycle analysis, GPS workout routing, and emergency crash detection in a lightweight aerospace titanium casing.',
                 'specifications': 'Display: 1.9" AMOLED Always-on (1000 nits) | Water Resistance: 50 Meters (5 ATM) | Sensors: ECG, SpO2, Optical Heart, Gyro | Battery: 48 Hours Typical | Case Material: Titanium Grade 5',
-                'price': Decimal('299.00'),
-                'original_price': Decimal('349.00'),
+                'price': Decimal('2999.00'),
+                'original_price': Decimal('4999.00'),
                 'stock': 42,
                 'is_featured': False,
                 'is_bestseller': True,
@@ -268,8 +274,8 @@ class Command(BaseCommand):
                 'short_description': 'Room-filling 360-degree sound with deep bass and IPX7 rugged waterproof design.',
                 'description': 'Take vibrant sound to the pool, beach, or campground. Features dual passive radiators, 24-hour continuous playback, built-in speakerphone mic, and party sync pairing for up to 100 speakers.',
                 'specifications': 'Output: 30W RMS | Battery: 24 Hours (7500 mAh) | Rating: IPX7 Waterproof & Dustproof | Range: 30m Bluetooth | Weight: 680g',
-                'price': Decimal('89.99'),
-                'original_price': Decimal('119.99'),
+                'price': Decimal('1999.00'),
+                'original_price': Decimal('2999.00'),
                 'stock': 50,
                 'is_featured': False,
                 'is_bestseller': False,
@@ -285,8 +291,8 @@ class Command(BaseCommand):
                 'short_description': 'Full-grain Tuscan calfskin leather with Goodyear welt construction.',
                 'description': 'Handcrafted in Italy using vegetable-tanned calfskin. Features elasticated side gussets, stacked leather heel with Vibram rubber half-sole for superior grip, and cushioned leather insole that molds to your feet.',
                 'specifications': 'Material: 100% Full-grain Tuscan Calfskin | Construction: Goodyear Welted | Sole: Vibram Lugged Rubber Half-sole | Lining: Soft Glove Leather | Origin: Florence, Italy',
-                'price': Decimal('210.00'),
-                'original_price': Decimal('260.00'),
+                'price': Decimal('3999.00'),
+                'original_price': Decimal('5499.00'),
                 'stock': 22,
                 'is_featured': True,
                 'is_bestseller': True,
@@ -300,8 +306,8 @@ class Command(BaseCommand):
                 'short_description': 'Extra-fine 100% Australian Merino wool with natural temperature regulation.',
                 'description': 'An everyday luxury staple. Incredibly soft against the skin, breathable, and naturally odor-resistant. Ribbed collar, cuffs, and hem ensure shape retention wash after wash.',
                 'specifications': 'Fabric: 100% Extra-fine Merino Wool (19.5 Micron) | Fit: Tailored Modern Regular | Care: Machine wash cold wool cycle or dry clean | Colors: Charcoal Grey, Navy, Camel',
-                'price': Decimal('95.00'),
-                'original_price': Decimal('125.00'),
+                'price': Decimal('1999.00'),
+                'original_price': Decimal('2999.00'),
                 'stock': 30,
                 'is_featured': False,
                 'is_bestseller': True,
@@ -315,8 +321,8 @@ class Command(BaseCommand):
                 'short_description': 'Water-resistant coated cotton canvas with reinforced elbows and 6 utility pockets.',
                 'description': 'Built for variable city climates. Features storm flap zipper closure, hidden packable hood, brass hardware, and interior fleece lining for crisp mornings.',
                 'specifications': 'Outer: 100% Wax-coated Heavy Cotton Canvas | Lining: Thermal Poly-fleece | Pockets: 4 Exterior Cargo + 2 Internal Security | Hardware: Antique Brass YKK Zippers',
-                'price': Decimal('165.00'),
-                'original_price': Decimal('210.00'),
+                'price': Decimal('2499.00'),
+                'original_price': Decimal('3499.00'),
                 'stock': 15,
                 'is_featured': True,
                 'is_bestseller': False,
@@ -330,8 +336,8 @@ class Command(BaseCommand):
                 'short_description': 'Stretch organic cotton twill designed for effortless transition from desk to dinner.',
                 'description': 'Versatile trousers crafted with 98% organic cotton and 2% elastane for unrestricted movement. Includes deep coin pocket and wrinkle-resistant finish.',
                 'specifications': 'Material: 98% Organic Cotton, 2% Elastane | Cut: Slim Tapered | Rise: Mid Rise | Closure: Horn Button & Metal Zip',
-                'price': Decimal('68.00'),
-                'original_price': Decimal('85.00'),
+                'price': Decimal('1299.00'),
+                'original_price': Decimal('1899.00'),
                 'stock': 40,
                 'is_featured': False,
                 'is_bestseller': False,
@@ -347,8 +353,8 @@ class Command(BaseCommand):
                 'short_description': '15-Bar Italian pump with integrated conical burr grinder and digital PID temperature.',
                 'description': 'Become your own master barista. Features thermo-block rapid heating system ready in 3 seconds, intuitive touchscreen controls, micro-foam steam wand for latte art, and single/double shot customization.',
                 'specifications': 'Pressure: 15-Bar Italian High-Pressure Pump | Water Tank: 2.0 Liters | Grinder: 30 Grind Settings Conical Burr | Heating: 3-Second ThermoJet | Power: 1680W',
-                'price': Decimal('549.99'),
-                'original_price': Decimal('699.99'),
+                'price': Decimal('14999.00'),
+                'original_price': Decimal('18999.00'),
                 'stock': 12,
                 'is_featured': True,
                 'is_bestseller': True,
@@ -362,8 +368,8 @@ class Command(BaseCommand):
                 'short_description': '5000Pa extreme suction with 3D obstacle avoidance and multi-floor precision mapping.',
                 'description': 'Autonomous floor care that leaves surfaces sparkling clean. Dual spinning mop pads scrub sticky spills, while LiDAR laser sensor navigates complex chair legs and carpets with automated mop lifting.',
                 'specifications': 'Suction Power: 5000 Pa | Navigation: LiDAR + 3D Structured Light | Runtime: 180 Minutes (5200 mAh) | Dustbin: 450ml | Water Tank: 200ml Electronically Controlled',
-                'price': Decimal('389.00'),
-                'original_price': Decimal('499.00'),
+                'price': Decimal('24999.00'),
+                'original_price': Decimal('29999.00'),
                 'stock': 20,
                 'is_featured': True,
                 'is_bestseller': False,
@@ -377,8 +383,8 @@ class Command(BaseCommand):
                 'short_description': 'Heavy cast iron for unbeatable heat retention, slow-cooking stews and crusty breads.',
                 'description': 'A kitchen heirloom. Chip-resistant enamel interior requires no pre-seasoning. Oven-safe up to 500°F with stainless steel knob and ergonomic loop handles for secure transport.',
                 'specifications': 'Capacity: 6.0 Quarts | Material: Heavy Cast Iron with 3-Layer Porcelain Enamel | Oven Safe: Up to 500°F (260°C) | Compatibility: Induction, Gas, Electric, Ceramic',
-                'price': Decimal('119.50'),
-                'original_price': Decimal('149.50'),
+                'price': Decimal('3499.00'),
+                'original_price': Decimal('4999.00'),
                 'stock': 25,
                 'is_featured': False,
                 'is_bestseller': True,
@@ -392,8 +398,8 @@ class Command(BaseCommand):
                 'short_description': 'Smooth pneumatic gas spring height adjustment for dual monitor workstations.',
                 'description': 'Elevate your workday posture in seconds. 100% sustainable moso bamboo desktop with spacious lower tier for ergonomic keyboard and mouse placement.',
                 'specifications': 'Surface Dimensions: 36" x 22" | Height Range: 4.7" to 19.7" | Weight Capacity: 35 lbs | Mechanism: Gas Spring Assist',
-                'price': Decimal('159.00'),
-                'original_price': Decimal('199.00'),
+                'price': Decimal('7999.00'),
+                'original_price': Decimal('9999.00'),
                 'stock': 16,
                 'is_featured': False,
                 'is_bestseller': False,
@@ -409,8 +415,8 @@ class Command(BaseCommand):
                 'short_description': 'The definitive guide to distributed databases, reliability, scalability, and maintainability.',
                 'description': 'By Martin Kleppmann. Explore the fundamental principles behind building scalable systems. Covers storage engines, replication algorithms, partitioning, transactions, consensus, and batch/stream processing.',
                 'specifications': 'Author: Martin Kleppmann | Publisher: O\'Reilly Media | Pages: 616 | Format: Paperback / Hardcover | Language: English | ISBN: 978-1449373320',
-                'price': Decimal('42.50'),
-                'original_price': Decimal('54.99'),
+                'price': Decimal('1299.00'),
+                'original_price': Decimal('1699.00'),
                 'stock': 45,
                 'is_featured': True,
                 'is_bestseller': True,
@@ -424,8 +430,8 @@ class Command(BaseCommand):
                 'short_description': 'The legendary classic on writing readable, testable, and maintainable software.',
                 'description': 'By Robert C. Martin (Uncle Bob). Discover the principles, patterns, and practices of writing clean code. Learn how to craft good names, format functions, handle errors gracefully, and refactor messy codebases.',
                 'specifications': 'Author: Robert C. Martin | Publisher: Prentice Hall | Pages: 464 | Format: Paperback | Language: English | ISBN: 978-0132350884',
-                'price': Decimal('38.00'),
-                'original_price': Decimal('49.99'),
+                'price': Decimal('999.00'),
+                'original_price': Decimal('1399.00'),
                 'stock': 35,
                 'is_featured': False,
                 'is_bestseller': True,
@@ -439,8 +445,8 @@ class Command(BaseCommand):
                 'short_description': 'Over 15 million copies sold. Transform your life with tiny changes that deliver remarkable results.',
                 'description': 'By James Clear. Learn practical strategies that will teach you exactly how to form good habits, break bad ones, and master the tiny behaviors that lead to remarkable results.',
                 'specifications': 'Author: James Clear | Publisher: Avery | Pages: 320 | Format: Hardcover | Language: English | ISBN: 978-0735211292',
-                'price': Decimal('24.00'),
-                'original_price': Decimal('30.00'),
+                'price': Decimal('499.00'),
+                'original_price': Decimal('799.00'),
                 'stock': 60,
                 'is_featured': True,
                 'is_bestseller': True,
@@ -454,8 +460,8 @@ class Command(BaseCommand):
                 'short_description': 'Master large-scale system design for senior software engineer and architect interviews.',
                 'description': 'By Alex Xu and Sahn Lam. Step-by-step real-world blueprints: payment systems, digital wallet, stock exchange, live streaming, cloud storage (S3), and distributed message queues.',
                 'specifications': 'Author: Alex Xu, Sahn Lam | Pages: 490 | Format: Paperback | Illustrated: Yes (Full diagrams) | ISBN: 979-8664653403',
-                'price': Decimal('39.95'),
-                'original_price': Decimal('49.95'),
+                'price': Decimal('1199.00'),
+                'original_price': Decimal('1599.00'),
                 'stock': 28,
                 'is_featured': False,
                 'is_bestseller': False,
@@ -471,8 +477,8 @@ class Command(BaseCommand):
                 'short_description': 'Ultra-slim Horween full-grain leather wallet with integrated anti-theft RFID blocking.',
                 'description': 'Holds up to 10 cards and flat cash without pocket bulge. Features dedicated pull-tab quick access slot for daily credit cards and hidden coin/key compartment.',
                 'specifications': 'Leather: American Horween Vegetable-Tanned | Capacity: 8-12 Cards + Cash | Protection: 13.56 MHz RFID Blocking Layer | Dimensions: 4.1" x 3.1" x 0.4"',
-                'price': Decimal('55.00'),
-                'original_price': Decimal('70.00'),
+                'price': Decimal('1499.00'),
+                'original_price': Decimal('1999.00'),
                 'stock': 40,
                 'is_featured': True,
                 'is_bestseller': True,
@@ -486,8 +492,8 @@ class Command(BaseCommand):
                 'short_description': 'Foldable MagSafe charging dock for Phone, Watch, and wireless earbuds simultaneously.',
                 'description': 'Declutter your nightstand or desk. Fast 15W Qi-certified magnetic wireless charging with weighted aluminum alloy base and intelligent heat dissipation.',
                 'specifications': 'Output: 15W Phone + 5W Watch + 5W Earbuds | Cable: 4ft USB-C to USB-C Included | Compatibility: MagSafe iPhones, Apple Watch, AirPods/Galaxy Buds',
-                'price': Decimal('69.99'),
-                'original_price': Decimal('89.99'),
+                'price': Decimal('1999.00'),
+                'original_price': Decimal('2799.00'),
                 'stock': 30,
                 'is_featured': False,
                 'is_bestseller': False,
@@ -501,8 +507,8 @@ class Command(BaseCommand):
                 'short_description': 'TSA-friendly checkpoint layout with 16" padded laptop sleeve and luggage pass-through.',
                 'description': 'Designed for seamless airport travel and daily commutes. Crafted from ballistic 840D Cordura nylon with hidden passport pocket and expandable water bottle holder.',
                 'specifications': 'Capacity: 28 Liters | Fabric: 840D Ballistic Cordura Nylon | Laptop Sleeve: Up to 16.2" Laptop | Zippers: YKK AquaGuard Weatherproof | Weight: 1.1 kg',
-                'price': Decimal('135.00'),
-                'original_price': Decimal('175.00'),
+                'price': Decimal('2999.00'),
+                'original_price': Decimal('3999.00'),
                 'stock': 24,
                 'is_featured': True,
                 'is_bestseller': True,
@@ -516,8 +522,8 @@ class Command(BaseCommand):
                 'short_description': 'Featherweight Japanese titanium frames with anti-reflective polarized optical lenses.',
                 'description': 'Timeless classic aviator silhouette reinvented with modern materials. Total UV400 protection eliminates blinding glare without color distortion.',
                 'specifications': 'Frame: Beta-Titanium (18 grams) | Lens: High-clarity Triacetate Cellulose (TAC) Polarized | UV Protection: 100% UVA/UVB (UV400) | Case: Hard Leatherette Case Included',
-                'price': Decimal('85.00'),
-                'original_price': Decimal('110.00'),
+                'price': Decimal('1499.00'),
+                'original_price': Decimal('2199.00'),
                 'stock': 0,  # Demonstrating Out of Stock badge!
                 'is_featured': False,
                 'is_bestseller': False,
@@ -546,15 +552,20 @@ class Command(BaseCommand):
                 }
             )
 
-            # Generate and attach SVG cover image
-            svg_cover = create_svg_image(
-                title=prod.name[:28],
-                subtitle=f"${prod.price:.2f} · {cat.name}",
-                category_name=cat.name,
-                bg_color="#0f172a",
-                accent_color=pdata['accent']
-            )
-            prod.cover_image.save(f"prod_{prod.slug}.svg", ContentFile(svg_cover), save=True)
+            # Prioritize real product photograph if available in media/products/covers/
+            real_cover = os.path.join(settings.MEDIA_ROOT, 'products', 'covers', f"{prod.slug}.jpg")
+            if os.path.exists(real_cover):
+                prod.cover_image = f"products/covers/{prod.slug}.jpg"
+                prod.save()
+            elif not prod.cover_image:
+                svg_cover = create_svg_image(
+                    title=prod.name[:28],
+                    subtitle=f"₹{prod.price:.2f} · {cat.name}",
+                    category_name=cat.name,
+                    bg_color="#0f172a",
+                    accent_color=pdata['accent']
+                )
+                prod.cover_image.save(f"prod_{prod.slug}.svg", ContentFile(svg_cover), save=True)
 
             # Generate gallery images
             if prod.gallery_images.count() == 0:
